@@ -68,5 +68,60 @@
 
     <p class="note">每天进步一点点</p>
   </main>
+<script>
+  const timeDisplay = document.getElementById("time");
+  const startButton = document.getElementById("start");
+
+  let remainingSeconds = 20 * 60;
+  let timerId = null;
+  let endTime = 0;
+
+  function updateDisplay() {
+    const minutes = Math.floor(remainingSeconds / 60);
+    const seconds = remainingSeconds % 60;
+
+    timeDisplay.textContent =
+      String(minutes).padStart(2, "0") + ":" +
+      String(seconds).padStart(2, "0");
+  }
+
+  function updateTimer() {
+    remainingSeconds = Math.max(
+      0,
+      Math.ceil((endTime - Date.now()) / 1000)
+    );
+
+    updateDisplay();
+
+    if (remainingSeconds === 0) {
+      clearInterval(timerId);
+      timerId = null;
+      startButton.textContent = "再来一轮";
+    }
+  }
+
+  startButton.addEventListener("click", function () {
+    if (timerId !== null) {
+      updateTimer();
+      clearInterval(timerId);
+      timerId = null;
+
+      if (remainingSeconds > 0) {
+        startButton.textContent = "继续专注";
+      }
+
+      return;
+    }
+
+    if (remainingSeconds === 0) {
+      remainingSeconds = 20 * 60;
+    }
+
+    endTime = Date.now() + remainingSeconds * 1000;
+    startButton.textContent = "暂停";
+    updateDisplay();
+    timerId = setInterval(updateTimer, 250);
+  });
+</script>
 </body>
 </html>
