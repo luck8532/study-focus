@@ -84,6 +84,48 @@
   let remainingSeconds = durationSeconds;
   let timerId = null;
   let endTime = 0;
+    let audioContext = null;
+
+  function prepareSound() {
+    const AudioContextClass =
+      window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContextClass) return;
+
+    if (!audioContext) {
+      audioContext = new AudioContextClass();
+    }
+
+    if (audioContext.state === "suspended") {
+      audioContext.resume().catch(function () {});
+    }
+  }
+
+  function playEndSound() {
+    if (!audioContext || audioContext.state !== "running") return;
+
+    for (let i = 0; i < 3; i++) {
+      const oscillator = audioContext.createOscillator();
+      const volume = audioContext.createGain();
+      const startTime = audioContext.currentTime + i * 0.4;
+
+      oscillator.type = "sine";
+      oscillator.frequency.value = 660;
+
+      volume.gain.setValueAtTime(0, startTime);
+      volume.gain.linearRampToValueAtTime(0.15, startTime + 0.02);
+      volume.gain.exponentialRampToValueAtTime(
+        0.001,
+        startTime + 0.25
+      );
+
+      oscillator.connect(volume);
+      volume.connect(audioContext.destination);
+
+      oscillator.start(startTime);
+      oscillator.stop(startTime + 0.3);
+    }
+  }
 
   function startLabel() {
     return currentMode === "focus" ? "开始专注" : "开始休息";
@@ -125,13 +167,16 @@
 
     updateDisplay();
 
+   
     if (remainingSeconds === 0) {
-      stopTimer();
-      startButton.textContent = "再来一轮";
-    }
+  stopTimer();
+  playEndSound();
+  startButton.textContent = "再来一轮";
+}
   }
 
   startButton.addEventListener("click", function () {
+        prepareSound();
     if (timerId !== null) {
       updateTimer();
       stopTimer();
