@@ -64,6 +64,7 @@
       <div>专注学习</div>
       <div id="time">20:00</div>
       <button type="button" id="start">开始专注</button>
+      <button type="button" id="reset">重置</button>
     </section>
 
     <p class="note">每天进步一点点</p>
@@ -121,6 +122,17 @@
     startButton.textContent = "暂停";
     updateDisplay();
     timerId = setInterval(updateTimer, 250);
+  });
+  const resetButton = document.getElementById("reset");
+
+  resetButton.addEventListener("click", function () {
+    clearInterval(timerId);
+    timerId = null;
+    remainingSeconds = 20 * 60;
+    endTime = 0;
+
+    updateDisplay();
+    startButton.textContent = "开始专注";
   });
 </script>
 </body>
