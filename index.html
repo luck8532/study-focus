@@ -61,7 +61,10 @@
     <p>一次只做一件事</p>
 
     <section class="timer">
-      <div>专注学习</div>
+      <div>
+  <button type="button" id="focusMode">专注 20 分钟</button>
+  <button type="button" id="breakMode">休息 5 分钟</button>
+</div>
       <div id="time">20:00</div>
       <button type="button" id="start">开始专注</button>
       <button type="button" id="reset">重置</button>
@@ -72,10 +75,19 @@
 <script>
   const timeDisplay = document.getElementById("time");
   const startButton = document.getElementById("start");
+  const resetButton = document.getElementById("reset");
+  const focusButton = document.getElementById("focusMode");
+  const breakButton = document.getElementById("breakMode");
 
-  let remainingSeconds = 20 * 60;
+  let currentMode = "focus";
+  let durationSeconds = 20 * 60;
+  let remainingSeconds = durationSeconds;
   let timerId = null;
   let endTime = 0;
+
+  function startLabel() {
+    return currentMode === "focus" ? "开始专注" : "开始休息";
+  }
 
   function updateDisplay() {
     const minutes = Math.floor(remainingSeconds / 60);
@@ -84,6 +96,25 @@
     timeDisplay.textContent =
       String(minutes).padStart(2, "0") + ":" +
       String(seconds).padStart(2, "0");
+  }
+
+  function stopTimer() {
+    clearInterval(timerId);
+    timerId = null;
+  }
+
+  function resetTimer() {
+    stopTimer();
+    remainingSeconds = durationSeconds;
+    endTime = 0;
+    updateDisplay();
+    startButton.textContent = startLabel();
+  }
+
+  function switchMode(mode) {
+    currentMode = mode;
+    durationSeconds = mode === "focus" ? 20 * 60 : 5 * 60;
+    resetTimer();
   }
 
   function updateTimer() {
@@ -95,8 +126,7 @@
     updateDisplay();
 
     if (remainingSeconds === 0) {
-      clearInterval(timerId);
-      timerId = null;
+      stopTimer();
       startButton.textContent = "再来一轮";
     }
   }
@@ -104,18 +134,18 @@
   startButton.addEventListener("click", function () {
     if (timerId !== null) {
       updateTimer();
-      clearInterval(timerId);
-      timerId = null;
+      stopTimer();
 
       if (remainingSeconds > 0) {
-        startButton.textContent = "继续专注";
+        startButton.textContent =
+          currentMode === "focus" ? "继续专注" : "继续休息";
       }
 
       return;
     }
 
     if (remainingSeconds === 0) {
-      remainingSeconds = 20 * 60;
+      remainingSeconds = durationSeconds;
     }
 
     endTime = Date.now() + remainingSeconds * 1000;
@@ -123,16 +153,15 @@
     updateDisplay();
     timerId = setInterval(updateTimer, 250);
   });
-  const resetButton = document.getElementById("reset");
 
-  resetButton.addEventListener("click", function () {
-    clearInterval(timerId);
-    timerId = null;
-    remainingSeconds = 20 * 60;
-    endTime = 0;
+  resetButton.addEventListener("click", resetTimer);
 
-    updateDisplay();
-    startButton.textContent = "开始专注";
+  focusButton.addEventListener("click", function () {
+    switchMode("focus");
+  });
+
+  breakButton.addEventListener("click", function () {
+    switchMode("break");
   });
 </script>
 </body>
