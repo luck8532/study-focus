@@ -303,8 +303,26 @@ taskForm.addEventListener("submit", function (event) {
   if (!taskText) return;
 
   const taskItem = document.createElement("li");
-  taskItem.textContent = taskText;
-  taskList.appendChild(taskItem);
+const label = document.createElement("label");
+const checkbox = document.createElement("input");
+const text = document.createElement("span");
+
+checkbox.type = "checkbox";
+text.textContent = taskText;
+
+label.style.display = "flex";
+label.style.alignItems = "center";
+label.style.gap = "12px";
+label.style.cursor = "pointer";
+
+checkbox.addEventListener("change", function () {
+  text.style.textDecoration = checkbox.checked ? "line-through" : "none";
+  text.style.opacity = checkbox.checked ? "0.5" : "1";
+});
+
+label.append(checkbox, text);
+taskItem.appendChild(label);
+taskList.appendChild(taskItem);
 
   taskInput.value = "";
   taskInput.focus();
