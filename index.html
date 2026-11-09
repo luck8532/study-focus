@@ -74,6 +74,22 @@
   <input type="color" id="themeColor" value="#a84e48">
 </p>
     <p class="note">每天进步一点点</p>
+    <section>
+  <h2>今天想学什么？</h2>
+
+  <form id="taskForm">
+    <input
+      type="text"
+      id="taskInput"
+      placeholder="例如：学习 n8n 查询工具"
+      maxlength="100"
+      required
+    >
+    <button type="submit">添加任务</button>
+  </form>
+
+  <ul id="taskList"></ul>
+</section>
   </main>
 <script>
   const timeDisplay = document.getElementById("time");
@@ -227,6 +243,23 @@ themeColor.addEventListener("input", function () {
   breakButton.addEventListener("click", function () {
     switchMode("break");
   });
+const taskForm = document.getElementById("taskForm");
+const taskInput = document.getElementById("taskInput");
+const taskList = document.getElementById("taskList");
+
+taskForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  const taskText = taskInput.value.trim();
+  if (!taskText) return;
+
+  const taskItem = document.createElement("li");
+  taskItem.textContent = taskText;
+  taskList.appendChild(taskItem);
+
+  taskInput.value = "";
+  taskInput.focus();
+});
 </script>
 </body>
 </html>
