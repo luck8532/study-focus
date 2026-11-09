@@ -83,8 +83,20 @@
   const breakButton = document.getElementById("breakMode");
 const themeColor = document.getElementById("themeColor");
 
+try {
+  const savedColor = localStorage.getItem("studyFocusColor");
+  if (savedColor) {
+    themeColor.value = savedColor;
+    document.body.style.backgroundColor = themeColor.value;
+  }
+} catch (error) {}
+
 themeColor.addEventListener("input", function () {
   document.body.style.backgroundColor = themeColor.value;
+
+  try {
+    localStorage.setItem("studyFocusColor", themeColor.value);
+  } catch (error) {}
 });
   let currentMode = "focus";
   let durationSeconds = 20 * 60;
