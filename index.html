@@ -296,33 +296,73 @@ const taskForm = document.getElementById("taskForm");
 const taskInput = document.getElementById("taskInput");
 const taskList = document.getElementById("taskList");
 
+let tasks = [];
+
+try {
+  const savedTasks = JSON.parse(
+    localStorage.getItem("studyFocusTasks") || "[]"
+  );
+
+  if (Array.isArray(savedTasks)) {
+    tasks = savedTasks.filter(function (task) {
+      return task &&
+        typeof task.text === "string" &&
+        typeof task.completed === "boolean";
+    });
+  }
+} catch (error) {}
+
+function saveTasks() {
+  try {
+    localStorage.setItem("studyFocusTasks", JSON.stringify(tasks));
+  } catch (error) {}
+}
+
+function renderTask(task) {
+  const taskItem = document.createElement("li");
+  const label = document.createElement("label");
+  const checkbox = document.createElement("input");
+  const text = document.createElement("span");
+
+  checkbox.type = "checkbox";
+  checkbox.checked = task.completed;
+  text.textContent = task.text;
+
+  label.style.display = "flex";
+  label.style.alignItems = "center";
+  label.style.gap = "12px";
+  label.style.cursor = "pointer";
+
+  function updateTaskStyle() {
+    text.style.textDecoration = task.completed ? "line-through" : "none";
+    text.style.opacity = task.completed ? "0.5" : "1";
+  }
+
+  updateTaskStyle();
+
+  checkbox.addEventListener("change", function () {
+    task.completed = checkbox.checked;
+    updateTaskStyle();
+    saveTasks();
+  });
+
+  label.append(checkbox, text);
+  taskItem.appendChild(label);
+  taskList.appendChild(taskItem);
+}
+
+tasks.forEach(renderTask);
+
 taskForm.addEventListener("submit", function (event) {
   event.preventDefault();
 
   const taskText = taskInput.value.trim();
   if (!taskText) return;
 
-  const taskItem = document.createElement("li");
-const label = document.createElement("label");
-const checkbox = document.createElement("input");
-const text = document.createElement("span");
-
-checkbox.type = "checkbox";
-text.textContent = taskText;
-
-label.style.display = "flex";
-label.style.alignItems = "center";
-label.style.gap = "12px";
-label.style.cursor = "pointer";
-
-checkbox.addEventListener("change", function () {
-  text.style.textDecoration = checkbox.checked ? "line-through" : "none";
-  text.style.opacity = checkbox.checked ? "0.5" : "1";
-});
-
-label.append(checkbox, text);
-taskItem.appendChild(label);
-taskList.appendChild(taskItem);
+  const task = { text: taskText, completed: false };
+  tasks.push(task);
+  renderTask(task);
+  saveTasks();
 
   taskInput.value = "";
   taskInput.focus();
