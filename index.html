@@ -69,7 +69,10 @@
       <button type="button" id="start">开始专注</button>
       <button type="button" id="reset">重置</button>
     </section>
-
+<p>
+  <label for="themeColor">选择背景颜色：</label>
+  <input type="color" id="themeColor" value="#a84e48">
+</p>
     <p class="note">每天进步一点点</p>
   </main>
 <script>
@@ -78,7 +81,11 @@
   const resetButton = document.getElementById("reset");
   const focusButton = document.getElementById("focusMode");
   const breakButton = document.getElementById("breakMode");
+const themeColor = document.getElementById("themeColor");
 
+themeColor.addEventListener("input", function () {
+  document.body.style.backgroundColor = themeColor.value;
+});
   let currentMode = "focus";
   let durationSeconds = 20 * 60;
   let remainingSeconds = durationSeconds;
